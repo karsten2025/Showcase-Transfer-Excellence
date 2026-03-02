@@ -16,12 +16,16 @@ out/
 .env.production.local
 
 # Lokale Datenbank & CSV-Daten (WICHTIG!)
-# Nur Root-/public-CSVs ignorieren; src/data/ (Parser) muss im Repo bleiben
+# src/data/ (Parser) muss im Repo bleiben
 *.sqlite
 *.sqlite3
 /data/
+# CSVs für Deployment auf Render explizit erlauben (sonst 404)
 /public/*.csv
 !public/granular_ma_data_sample.csv
+!public/granular_ma_data_2500.csv
+!public/refined_matrix_2500.csv
+!public/cashflow_phasen_2500.csv
 
 # IDE & Editor
 .vscode/
