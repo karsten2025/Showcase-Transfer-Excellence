@@ -1,0 +1,21 @@
+# Render Blueprint – Transfer Excellence Portal
+# https://render.com/docs/blueprint-spec
+#
+# WICHTIG: Als "Static Site" konfigurieren (nicht Web Service)!
+# Dann: Build Command = npm ci && npm run build
+#      Publish Directory = dist
+
+services:
+  - type: web
+    name: transfer-excellence
+    runtime: node
+    region: frankfurt
+
+    buildCommand: npm ci && npm run build
+
+    # Start-Kommando nur für Web Service (bindet an 0.0.0.0)
+    startCommand: npx vite preview --host 0.0.0.0 --port $PORT
+
+    envVars:
+      - key: NODE_VERSION
+        value: "20"

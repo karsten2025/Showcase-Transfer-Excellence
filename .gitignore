@@ -3,9 +3,10 @@ node_modules/
 .pnp
 .pnp.js
 
-# Produktion
+# Produktion & Build-Artefakte
 dist/
 build/
+out/
 
 # Sensible Daten & Umgebungsvariablen (WICHTIG!)
 .env

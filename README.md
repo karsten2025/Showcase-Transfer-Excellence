@@ -34,3 +34,18 @@ Ein KI-gestütztes Steuerungstool für großangelegte Restrukturierungen (2.500 
 - Tailwind CSS 4
 - Zustand (State Management)
 - Gemini 2.0 Pro (Logik & Extraktion)
+
+## Deployment auf Render
+
+**Empfohlen: Static Site**
+- Service Type: **Static Site**
+- Build Command: `npm ci && npm run build`
+- Publish Directory: `dist`
+- Root Directory: (leer lassen)
+
+**Alternativ: Web Service** (wenn Start-Command benötigt)
+- Build Command: `npm ci && npm run build`
+- Start Command: `npx vite preview --host 0.0.0.0 --port $PORT`
+- Environment: `NODE_VERSION=20`
+
+Die `render.yaml` im Projektroot enthält die Blueprint-Konfiguration.
