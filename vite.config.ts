@@ -28,9 +28,10 @@ export default defineConfig(({mode}) => {
       chunkSizeWarningLimit: 600,
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
+    },
+    preview: {
+      allowedHosts: ['showcase-transfer-excellence.onrender.com', '.onrender.com'],
     },
   };
 });
