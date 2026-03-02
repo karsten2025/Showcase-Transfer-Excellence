@@ -38,6 +38,13 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ cashflow }) => {
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
 
+  const isLoading = employeeCount === 0;
+  const displayValue = (val: number, asCurrency = false) => {
+    if (isLoading) return 'Lade Daten...';
+    if (Number.isNaN(val)) return '—';
+    return asCurrency ? formatCurrency(val) : String(val);
+  };
+
   return (
     <div className="flex flex-col gap-6 min-h-0">
       {/* KPI-Kacheln – oben fixiert, responsives Grid */}
@@ -45,7 +52,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ cashflow }) => {
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <div className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm">
             <h3 className="text-xs md:text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Gesamt Cashout</h3>
-            <p className="text-2xl md:text-3xl font-light text-slate-900">{formatCurrency(breakdown.total)}</p>
+            <p className="text-2xl md:text-3xl font-light text-slate-900">{displayValue(breakdown.total, true)}</p>
             <div className="mt-2 md:mt-4 flex flex-wrap items-center gap-2 text-xs md:text-sm">
               <span className="text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">Budget: 320 Mio. €</span>
               {breakdown.total > 320_000_000 && (
@@ -55,16 +62,16 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ cashflow }) => {
           </div>
           <div className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm">
             <h3 className="text-xs md:text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">TG-Potential</h3>
-            <p className="text-2xl md:text-3xl font-light text-slate-900">{breakdown.tgPotential}</p>
+            <p className="text-2xl md:text-3xl font-light text-slate-900">{displayValue(breakdown.tgPotential)}</p>
             <p className="text-xs md:text-sm text-slate-500 mt-2">Mitarbeiter für Transfer</p>
           </div>
           <div className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm">
             <h3 className="text-xs md:text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Abfindungen (Kumuliert)</h3>
-            <p className="text-2xl md:text-3xl font-light text-slate-900">{formatCurrency(breakdown.abfindung)}</p>
+            <p className="text-2xl md:text-3xl font-light text-slate-900">{displayValue(breakdown.abfindung, true)}</p>
           </div>
           <div className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm">
             <h3 className="text-xs md:text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Remanenzkosten (TG)</h3>
-            <p className="text-2xl md:text-3xl font-light text-slate-900">{formatCurrency(breakdown.remanenz)}</p>
+            <p className="text-2xl md:text-3xl font-light text-slate-900">{displayValue(breakdown.remanenz, true)}</p>
             <p className="text-xs md:text-sm text-slate-500 mt-2">Burn-Rate über 12 Monate</p>
           </div>
         </div>

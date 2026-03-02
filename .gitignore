@@ -15,11 +15,12 @@ build/
 .env.production.local
 
 # Lokale Datenbank & CSV-Daten (WICHTIG!)
-*.csv
+# Nur Root-/public-CSVs ignorieren; src/data/ (Parser) muss im Repo bleiben
 *.sqlite
 *.sqlite3
-data/
-public/*.csv
+/data/
+/public/*.csv
+!public/granular_ma_data_sample.csv
 
 # IDE & Editor
 .vscode/

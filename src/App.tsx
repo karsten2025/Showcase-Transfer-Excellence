@@ -12,22 +12,39 @@ export default function App() {
   const setEmployees = useDataStore(s => s.setEmployees);
 
   useEffect(() => {
-    fetch('/granular_ma_data_2500.csv')
-      .then(res => res.text())
-      .then(csvText => {
-        const parsed = Papa.parse<Record<string, string>>(csvText, { header: true, skipEmptyLines: true });
-        const employees: Employee[] = parsed.data.map(row => ({
-          MA_ID: parseInt(row.MA_ID ?? '0', 10),
-          GmbH: row.GmbH ?? '',
-          Alter: parseInt(row.Alter ?? '0', 10),
-          Dienstjahre: parseInt(row.Dienstjahre ?? '0', 10),
-          Brutto_Monat: parseFloat(row.Brutto_Monat ?? '0'),
-          Skill_Index: parseFloat(row.Skill_Index ?? '0'),
-          Montan: row.Montan === 'True',
-        }));
-        setEmployees(employees);
-      })
-      .catch(err => console.error('Fehler beim Laden der Mitarbeiterdaten:', err));
+    const loadEmployees = async () => {
+      const urls = ['/granular_ma_data_2500.csv', '/granular_ma_data_sample.csv'];
+      let csvText = '';
+      for (const url of urls) {
+        const res = await fetch(url);
+        if (res.ok) {
+          csvText = await res.text();
+          break;
+        }
+      }
+      if (!csvText) {
+        console.error('Keine Mitarbeiter-CSV gefunden.');
+        return;
+      }
+      const parsed = Papa.parse<Record<string, unknown>>(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true,
+      });
+      const num = (v: unknown) => (typeof v === 'number' ? v : parseFloat(String(v ?? 0)) || 0);
+      const int = (v: unknown) => (typeof v === 'number' ? Math.round(v) : parseInt(String(v ?? 0), 10) || 0);
+      const employees: Employee[] = parsed.data.map((row) => ({
+        MA_ID: int(row.MA_ID),
+        GmbH: String(row.GmbH ?? ''),
+        Alter: int(row.Alter),
+        Dienstjahre: int(row.Dienstjahre),
+        Brutto_Monat: num(row.Brutto_Monat),
+        Skill_Index: num(row.Skill_Index),
+        Montan: String(row.Montan ?? '').toLowerCase() === 'true',
+      }));
+      setEmployees(employees);
+    };
+    loadEmployees().catch((err) => console.error('Fehler beim Laden der Mitarbeiterdaten:', err));
   }, [setEmployees]);
 
   return (

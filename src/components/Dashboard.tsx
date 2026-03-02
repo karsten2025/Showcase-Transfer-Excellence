@@ -25,6 +25,8 @@ interface DynamicSummaryProps {
     exklusion: number;
     vermittelt: number;
     gesamtkosten: number;
+    durchschnittsAlter?: number;
+    averageSkillIndex?: number;
   };
 }
 
@@ -130,7 +132,16 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     loadData()
       .then((d) => {
         setData(d);
-        setEmployees(d.employees);
+        const storeEmployees = d.employees.map((emp) => ({
+          MA_ID: typeof emp.MA_ID === 'number' ? emp.MA_ID : parseInt(String(emp.MA_ID), 10) || 0,
+          GmbH: emp.GmbH,
+          Alter: emp.Alter,
+          Dienstjahre: emp.Dienstjahre,
+          Brutto_Monat: emp.Brutto_Monat,
+          Skill_Index: emp.Skill_Index,
+          Montan: emp.Montan,
+        }));
+        setEmployees(storeEmployees);
       })
       .catch((err) => {
         setError(

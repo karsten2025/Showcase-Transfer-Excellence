@@ -36,6 +36,7 @@ interface DataState {
     gesamtkosten: number;
     einsparung: number;
     durchschnittsAlter: number;
+    averageSkillIndex: number;
   };
 
   // Financial-Breakdown für Quartals-Chart (Abfindung vs. Remanenz)
@@ -67,7 +68,7 @@ export const useDataStore = create<DataState>((set, get) => ({
     const { employees, baseAbfindungsFaktor, haertefallAlter } = get();
     
     if (employees.length === 0) return {
-      tgPotential: 0, exklusion: 0, vermittelt: 0, gesamtkosten: 0, einsparung: 0, durchschnittsAlter: 0
+      tgPotential: 0, exklusion: 0, vermittelt: 0, gesamtkosten: 0, einsparung: 0, durchschnittsAlter: 0, averageSkillIndex: 0
     };
 
     let metrics = {
@@ -75,11 +76,13 @@ export const useDataStore = create<DataState>((set, get) => ({
       exklusion: 0,
       gesamtkosten: 0,
       direktKosten: 0,
-      alterSumme: 0
+      alterSumme: 0,
+      skillSumme: 0
     };
 
     employees.forEach(ma => {
       metrics.alterSumme += ma.Alter;
+      metrics.skillSumme += ma.Skill_Index;
       
       // Regel: Montan-Zuschlag +0.3
       const faktor = ma.Montan ? baseAbfindungsFaktor + 0.3 : baseAbfindungsFaktor;
@@ -107,7 +110,8 @@ export const useDataStore = create<DataState>((set, get) => ({
       vermittelt: Math.floor(metrics.tgPotential * 0.15),
       gesamtkosten: metrics.gesamtkosten,
       einsparung: metrics.direktKosten - metrics.gesamtkosten,
-      durchschnittsAlter: Number((metrics.alterSumme / employees.length).toFixed(1))
+      durchschnittsAlter: Number((metrics.alterSumme / employees.length).toFixed(1)),
+      averageSkillIndex: Number((metrics.skillSumme / employees.length).toFixed(2))
     };
   },
 

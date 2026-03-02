@@ -1,0 +1,4 @@
+MA_ID,GmbH,Alter,Dienstjahre,Brutto_Monat,Skill_Index,Montan,Status_Logik
+1001,Stahl_Produktion_GmbH,52,28,5850.00,0.45,true,TG_Potential
+1002,Logistik_Sued_GmbH,34,8,4200.00,0.65,false,TG_Potential
+1003,IT_Service_Holding,29,3,6700.00,0.92,false,TG_Potential
