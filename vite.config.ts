@@ -29,9 +29,10 @@ export default defineConfig(({mode}) => {
     },
     server: {
       hmr: process.env.DISABLE_HMR !== 'true',
+      allowedHosts: true,
     },
     preview: {
-      allowedHosts: ['showcase-transfer-excellence.onrender.com', '.onrender.com'],
+      allowedHosts: true,
     },
   };
 });
