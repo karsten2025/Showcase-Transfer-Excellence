@@ -7,6 +7,7 @@ import { SocialView } from "./SocialView";
 import { OperationalView } from "./OperationalView";
 import { VariableTooltip } from "./VariableTooltip";
 import { ProfileSwitcher } from "./ProfileSwitcher";
+import { DashboardAssistant } from "./DashboardAssistant";
 import {
   Settings,
   Users,
@@ -461,6 +462,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
 
         {/* View Content */}
+        <DashboardAssistant />
         <div className="flex-1 overflow-y-auto p-8">
           {activeTab === "financial" && (
             <FinancialView cashflow={data.cashflow} />

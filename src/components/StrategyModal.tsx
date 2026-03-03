@@ -54,7 +54,7 @@ export const StrategyModal: React.FC<StrategyModalProps> = ({ isOpen, onClose })
               <span className="font-semibold">Vorgelegt von:</span> Karsten Zenk
             </p>
             <p className="text-sm text-slate-600 mt-1">
-              <span className="font-semibold">Fokus:</span> Komplexitätnutzung | Datenbasierte Empathie | Remanenz-Optimierung
+              <span className="font-semibold">Fokus:</span> Komplexitätsnutzung | Datenbasierte Empathie | Remanenz-Optimierung
             </p>
             <p className="text-sm font-mono text-slate-500 mt-4 italic">
               Mission: Transformation durch Klarheit — Nutzung von Komplexität am Beispiel von 2.500 individuellen Erwerbsbiografien in regulierten Industrien/Systemen.
