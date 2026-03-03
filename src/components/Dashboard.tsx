@@ -6,6 +6,7 @@ import { FinancialView } from "./FinancialView";
 import { SocialView } from "./SocialView";
 import { OperationalView } from "./OperationalView";
 import { VariableTooltip } from "./VariableTooltip";
+import { ProfileSwitcher } from "./ProfileSwitcher";
 import {
   Settings,
   Users,
@@ -67,7 +68,7 @@ const DynamicSummary: React.FC<DynamicSummaryProps> = ({
   );
 };
 
-const STAKEHOLDER_HEURISTICS = {
+const STAKEHOLDER_HEURISTICS_STEEL = {
   abfindungsfaktor: {
     heuristik: "Der Preis für den sozialen Frieden.",
     vorstand:
@@ -91,6 +92,33 @@ const STAKEHOLDER_HEURISTICS = {
     betriebsrat:
       "Schutzschild für die älteste Generation. Sichert den Übergang zur Rente.",
     pmo: "Verändert die Zielgruppengröße für Qualifizierungen.",
+  },
+};
+
+const STAKEHOLDER_HEURISTICS_AUTOMOTIVE = {
+  abfindungsfaktor: {
+    heuristik: "Fokus auf Speed-to-Market.",
+    vorstand:
+      "Schnelle Abwicklung priorisiert. Kein Montan-Zuschlag – Faktor bleibt transparent und kalkulierbar.",
+    betriebsrat:
+      "Reskilling-Fähigkeit zählt mehr als Abfindungshöhe. Skill-Index steuert Vermittlungschancen.",
+    pmo: "Agile Umsetzung: Weniger regulatorische Zuschläge, mehr Dynamik durch Qualifizierung.",
+  },
+  nettoAufstockung: {
+    heuristik: "Brücke ins Reskilling.",
+    vorstand:
+      "Finanzierung von Weiterbildung während der Transferphase. Höherer Skill-Index = höhere Vermittlungsquote.",
+    betriebsrat:
+      "Sicherheitsnetz für Qualifizierung. Ermöglicht Fokus auf neue Skills statt Statuserhalt.",
+    pmo: "Balance zwischen Remanenzkosten und Vermittlungsgeschwindigkeit. Skill-Index als Hebel.",
+  },
+  haertefallAlter: {
+    heuristik: "Altersgrenze vs. Skill-Relevanz.",
+    vorstand:
+      "Im High-Tech-Kontext zählt Skill-Index stärker als Alter. Weniger Härtefälle, mehr TG-Potential.",
+    betriebsrat:
+      "Schutz für ältere MA mit hohem Skill-Index. Übergang zur Rente bleibt Option.",
+    pmo: "Zielgruppengröße für Reskilling. Skill-Index priorisiert Umschulungsbedarfe.",
   },
 };
 
@@ -126,6 +154,8 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const haertefallAlterStore = useDataStore((s) => s.haertefallAlter);
   const aufstockungNetto = useDataStore((s) => s.aufstockungNetto);
   const getMetrics = useDataStore((s) => s.getMetrics);
+  const activeProfile = useDataStore((s) => s.activeProfile);
+  const setActiveProfile = useDataStore((s) => s.setActiveProfile);
 
   useEffect(() => {
     setError(null);
@@ -223,7 +253,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const isHaertefall = emp.Alter >= haertefallAlter;
     const status = isHaertefall ? "Exklusion_Vorruhestand" : "TG_Potential";
 
-    const currentFaktor = getAbfindungsFaktorForFrame(abfindungsfaktor, emp.regulatoryFrame ?? 'standard');
+    const currentFaktor = getAbfindungsFaktorForFrame(abfindungsfaktor, emp.regulatoryFrame ?? 'standard', activeProfile);
 
     // Base Abfindung
     let abfindung = emp.Brutto_Monat * emp.Dienstjahre * currentFaktor;
@@ -283,7 +313,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <label className="flex justify-between items-start text-sm font-medium text-slate-700 mb-2">
                 <VariableTooltip
                   label="Abfindungsfaktor (Basis)"
-                  content={STAKEHOLDER_HEURISTICS.abfindungsfaktor}
+                  content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.abfindungsfaktor : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.abfindungsfaktor}
                 />
                 <span className="text-indigo-600 shrink-0 ml-2">
                   {abfindungsfaktor.toFixed(1)}
@@ -309,7 +339,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <label className="flex justify-between items-start text-sm font-medium text-slate-700 mb-2">
                 <VariableTooltip
                   label="Netto-Aufstockung (%)"
-                  content={STAKEHOLDER_HEURISTICS.nettoAufstockung}
+                  content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.nettoAufstockung : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.nettoAufstockung}
                 />
                 <span className="text-indigo-600 shrink-0 ml-2">
                   {nettoAufstockung}%
@@ -332,7 +362,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <label className="flex justify-between items-start text-sm font-medium text-slate-700 mb-2">
                 <VariableTooltip
                   label="Härtefall-Alter"
-                  content={STAKEHOLDER_HEURISTICS.haertefallAlter}
+                  content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.haertefallAlter : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.haertefallAlter}
                 />
                 <span className="text-indigo-600 shrink-0 ml-2">
                   {haertefallAlter} Jahre
@@ -385,8 +415,15 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navigation */}
-        <div className="bg-white border-b border-slate-200 px-8 py-4 flex gap-8">
+        {/* Profile Switcher + Top Navigation */}
+        <div className="bg-white border-b border-slate-200 px-8 py-4">
+          <div className="mb-4 max-w-md">
+            <ProfileSwitcher
+              activeProfile={activeProfile}
+              onSwitch={setActiveProfile}
+            />
+          </div>
+          <div className="flex gap-8">
           <button
             onClick={() => setActiveTab("financial")}
             className={`flex items-center gap-2 pb-4 -mb-4 border-b-2 font-medium text-sm transition-colors ${
@@ -420,6 +457,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <Settings className="w-4 h-4" />
             PMO (Operational)
           </button>
+          </div>
         </div>
 
         {/* View Content */}

@@ -1,9 +1,12 @@
 import { create } from 'zustand';
 
+/** Industrie-Profil – steuert Abfindungslogik und Fokus */
+export type ActiveProfile = 'STEEL' | 'AUTOMOTIVE';
+
 /** Regulatorischer Rahmen – bestimmt Abfindungs- und Remanenz-Logik */
 export type RegulatoryFrame = 'standard' | 'high-impact' | 'extreme';
 
-/** Abfindungszuschlag pro Frame (additiv zum Basis-Faktor) */
+/** Abfindungszuschlag pro Frame (additiv zum Basis-Faktor) – nur bei STEEL aktiv */
 const ABFINDUNGS_ZUSCHLAG: Record<RegulatoryFrame, number> = {
   standard: 0,
   'high-impact': 0.15,
@@ -24,10 +27,13 @@ const ABFINDUNGS_ANTEIL_TG: Record<RegulatoryFrame, number> = {
   extreme: 0.8,
 };
 
+/** Effektiver Abfindungsfaktor – bei AUTOMOTIVE entfällt der Zuschlag (Fokus Skill-Index). */
 export function getAbfindungsFaktorForFrame(
   baseFaktor: number,
-  frame: RegulatoryFrame
+  frame: RegulatoryFrame,
+  activeProfile: ActiveProfile = 'STEEL'
 ): number {
+  if (activeProfile === 'AUTOMOTIVE') return baseFaktor;
   return baseFaktor + ABFINDUNGS_ZUSCHLAG[frame];
 }
 
@@ -45,12 +51,14 @@ export interface Employee {
 
 interface DataState {
   employees: Employee[];
+  activeProfile: ActiveProfile;
   baseAbfindungsFaktor: number;
   aufstockungNetto: number;
   haertefallAlter: number;
   sprinterPraemie: number;
 
   setEmployees: (data: Employee[]) => void;
+  setActiveProfile: (profile: ActiveProfile) => void;
   setBaseAbfindungsFaktor: (val: number) => void;
   setHaertefallAlter: (val: number) => void;
   setNettoAufstockung: (val: number) => void;
@@ -76,18 +84,20 @@ interface DataState {
 
 export const useDataStore = create<DataState>((set, get) => ({
   employees: [],
+  activeProfile: 'STEEL',
   baseAbfindungsFaktor: 1.2,
   aufstockungNetto: 0.85,
   haertefallAlter: 60,
   sprinterPraemie: 0.20,
 
   setEmployees: (employees) => set({ employees }),
+  setActiveProfile: (activeProfile) => set({ activeProfile }),
   setBaseAbfindungsFaktor: (val) => set({ baseAbfindungsFaktor: val }),
   setHaertefallAlter: (val) => set({ haertefallAlter: val }),
   setNettoAufstockung: (val) => set({ aufstockungNetto: val }),
 
   getMetrics: () => {
-    const { employees, baseAbfindungsFaktor, haertefallAlter } = get();
+    const { employees, baseAbfindungsFaktor, haertefallAlter, activeProfile } = get();
 
     if (employees.length === 0) {
       return {
@@ -114,7 +124,7 @@ export const useDataStore = create<DataState>((set, get) => ({
       metrics.alterSumme += ma.Alter;
       metrics.skillSumme += ma.Skill_Index;
 
-      const faktor = getAbfindungsFaktorForFrame(baseAbfindungsFaktor, ma.regulatoryFrame);
+      const faktor = getAbfindungsFaktorForFrame(baseAbfindungsFaktor, ma.regulatoryFrame, activeProfile);
       const remanenzProMonat = REMANENZ_PRO_MONAT[ma.regulatoryFrame];
       const abfindungsAnteil = ABFINDUNGS_ANTEIL_TG[ma.regulatoryFrame];
       const isExklusion = ma.Alter >= haertefallAlter;
@@ -133,19 +143,26 @@ export const useDataStore = create<DataState>((set, get) => ({
         ma.Brutto_Monat * ma.Dienstjahre * 1.5 + ma.Brutto_Monat * 3;
     });
 
+    const avgSkill = metrics.skillSumme / employees.length;
+    const vermitteltBase = metrics.tgPotential * 0.15;
+    const vermittelt =
+      activeProfile === 'AUTOMOTIVE'
+        ? Math.floor(vermitteltBase * (1 + avgSkill))
+        : Math.floor(vermitteltBase);
+
     return {
       tgPotential: metrics.tgPotential,
       exklusion: metrics.exklusion,
-      vermittelt: Math.floor(metrics.tgPotential * 0.15),
+      vermittelt: Math.min(vermittelt, metrics.tgPotential),
       gesamtkosten: metrics.gesamtkosten,
       einsparung: metrics.direktKosten - metrics.gesamtkosten,
       durchschnittsAlter: Number((metrics.alterSumme / employees.length).toFixed(1)),
-      averageSkillIndex: Number((metrics.skillSumme / employees.length).toFixed(2)),
+      averageSkillIndex: Number(avgSkill.toFixed(2)),
     };
   },
 
   getFinancialBreakdown: () => {
-    const { employees, baseAbfindungsFaktor, haertefallAlter } = get();
+    const { employees, baseAbfindungsFaktor, haertefallAlter, activeProfile } = get();
     let abfindung = 0;
     let remanenz = 0;
     let tgPotential = 0;
@@ -153,7 +170,7 @@ export const useDataStore = create<DataState>((set, get) => ({
 
     employees.forEach((ma) => {
       const isExklusion = ma.Alter >= haertefallAlter;
-      const faktor = getAbfindungsFaktorForFrame(baseAbfindungsFaktor, ma.regulatoryFrame);
+      const faktor = getAbfindungsFaktorForFrame(baseAbfindungsFaktor, ma.regulatoryFrame, activeProfile);
       const remanenzProMonat = REMANENZ_PRO_MONAT[ma.regulatoryFrame];
       const abfindungsAnteil = ABFINDUNGS_ANTEIL_TG[ma.regulatoryFrame];
 
