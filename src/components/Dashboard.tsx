@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { loadData, Employee, GmbHMatrix, Cashflow } from "../data/parser";
 import { useStore } from "../store";
-import { useDataStore } from "../store/useDataStore";
+import { useDataStore, getAbfindungsFaktorForFrame } from "../store/useDataStore";
 import { FinancialView } from "./FinancialView";
 import { SocialView } from "./SocialView";
 import { OperationalView } from "./OperationalView";
@@ -139,7 +139,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           Dienstjahre: emp.Dienstjahre,
           Brutto_Monat: emp.Brutto_Monat,
           Skill_Index: emp.Skill_Index,
-          Montan: emp.Montan,
+          regulatoryFrame: emp.regulatoryFrame,
         }));
         setEmployees(storeEmployees);
       })
@@ -223,8 +223,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const isHaertefall = emp.Alter >= haertefallAlter;
     const status = isHaertefall ? "Exklusion_Vorruhestand" : "TG_Potential";
 
-    let currentFaktor = abfindungsfaktor;
-    if (emp.Montan) currentFaktor += 0.3;
+    const currentFaktor = getAbfindungsFaktorForFrame(abfindungsfaktor, emp.regulatoryFrame ?? 'standard');
 
     // Base Abfindung
     let abfindung = emp.Brutto_Monat * emp.Dienstjahre * currentFaktor;
@@ -302,7 +301,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 className="w-full accent-indigo-600"
               />
               <p className="text-xs text-slate-500 mt-1">
-                Montan-GmbHs automatisch +0.3
+                RegulatoryFrame: Standard +0, High-Impact +0.15, Extreme +0.3
               </p>
             </div>
 

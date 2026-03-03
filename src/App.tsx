@@ -5,7 +5,7 @@ import { LandingPage } from './components/LandingPage';
 import { DeveloperView } from './components/DeveloperView';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useDataStore } from './store/useDataStore';
-import type { Employee } from './store/useDataStore';
+import type { Employee, RegulatoryFrame } from './store/useDataStore';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'landing' | 'stakeholder' | 'developer'>('landing');
@@ -33,6 +33,10 @@ export default function App() {
       });
       const num = (v: unknown) => (typeof v === 'number' ? v : parseFloat(String(v ?? 0)) || 0);
       const int = (v: unknown) => (typeof v === 'number' ? Math.round(v) : parseInt(String(v ?? 0), 10) || 0);
+      const toFrame = (r: Record<string, unknown>): RegulatoryFrame => {
+        const m = String(r.Montan ?? '').toLowerCase() === 'true';
+        return m ? 'extreme' : 'standard';
+      };
       const employees: Employee[] = parsed.data.map((row) => ({
         MA_ID: int(row.MA_ID),
         GmbH: String(row.GmbH ?? ''),
@@ -40,7 +44,7 @@ export default function App() {
         Dienstjahre: int(row.Dienstjahre),
         Brutto_Monat: num(row.Brutto_Monat),
         Skill_Index: num(row.Skill_Index),
-        Montan: String(row.Montan ?? '').toLowerCase() === 'true',
+        regulatoryFrame: toFrame(row),
       }));
       setEmployees(employees);
     };

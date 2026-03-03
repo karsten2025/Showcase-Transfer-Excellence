@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import type { RegulatoryFrame } from '../store/useDataStore';
 
 export interface Employee {
   MA_ID: string;
@@ -7,7 +8,7 @@ export interface Employee {
   Dienstjahre: number;
   Brutto_Monat: number;
   Skill_Index: number;
-  Montan: boolean;
+  regulatoryFrame: RegulatoryFrame;
   Status_Logik: string;
   Individuelle_Kosten?: number;
 }
@@ -29,10 +30,18 @@ export interface Cashflow {
   Total_Cashout: number;
 }
 
+/** CSV Montan true → extreme, false → standard. Später erweiterbar (z.B. per GmbH-Mapping). */
+function toRegulatoryFrame(row: Record<string, unknown>): RegulatoryFrame {
+  const montan = String(row.Montan ?? row.regulatoryFrame ?? '').toLowerCase() === 'true';
+  const frame = String(row.RegulatoryFrame ?? row.regulatoryFrame ?? '').toLowerCase();
+  if (frame === 'high-impact' || frame === 'tarifgebunden') return 'high-impact';
+  if (frame === 'extreme' || frame === 'montan' || montan) return 'extreme';
+  return 'standard';
+}
+
 const parseEmployeeRow = (row: Record<string, unknown>): Employee => {
   const num = (v: unknown) => (typeof v === 'number' ? v : parseFloat(String(v ?? 0)) || 0);
   const int = (v: unknown) => (typeof v === 'number' ? Math.round(v) : parseInt(String(v ?? 0), 10) || 0);
-  const montan = String(row.Montan ?? '').toLowerCase() === 'true';
   return {
     MA_ID: String(row.MA_ID ?? ''),
     GmbH: String(row.GmbH ?? ''),
@@ -40,7 +49,7 @@ const parseEmployeeRow = (row: Record<string, unknown>): Employee => {
     Dienstjahre: int(row.Dienstjahre),
     Brutto_Monat: num(row.Brutto_Monat),
     Skill_Index: num(row.Skill_Index),
-    Montan: montan,
+    regulatoryFrame: toRegulatoryFrame(row),
     Status_Logik: String(row.Status_Logik ?? ''),
     Individuelle_Kosten: num(row.Individuelle_Kosten),
   };

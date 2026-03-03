@@ -129,7 +129,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className="bg-[#111] text-white p-12">
             <div className="flex items-center gap-6 mb-10">
               <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-xl font-serif italic">
-                KZ
+                ZK
               </div>
               <div>
                 <h3 className="text-2xl font-serif italic mb-1">Karsten Zenk</h3>
