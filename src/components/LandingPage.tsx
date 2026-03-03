@@ -1,13 +1,29 @@
-import React from 'react';
-import { ShieldCheck, Database, Linkedin, Link as LinkIcon, Award, Cpu, CheckCircle2, ExternalLink, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldCheck, Database, Linkedin, Link as LinkIcon, Award, Cpu, CheckCircle2, ExternalLink, ChevronRight, FileText } from 'lucide-react';
+import { StrategyModal } from './StrategyModal';
 
 interface LandingPageProps {
   onNavigate: (view: 'stakeholder' | 'developer') => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
+  const [strategyModalOpen, setStrategyModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#e5e5e5] text-slate-900 font-sans selection:bg-red-500 selection:text-white">
+      {/* Top Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-40 flex justify-end items-center px-6 py-4 bg-[#e5e5e5]/80 backdrop-blur-sm border-b border-slate-200/50">
+        <button
+          onClick={() => setStrategyModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-mono text-slate-600 hover:text-slate-900 hover:bg-white/60 rounded-lg transition-colors uppercase tracking-wider"
+        >
+          <FileText className="w-4 h-4" />
+          Strategy & Concept
+        </button>
+      </nav>
+
+      <StrategyModal isOpen={strategyModalOpen} onClose={() => setStrategyModalOpen(false)} />
+
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-24 flex flex-col items-center text-center">
         <div className="inline-flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-1.5 rounded-sm text-xs font-mono tracking-widest mb-12">
