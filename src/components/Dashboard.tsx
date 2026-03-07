@@ -7,6 +7,7 @@ import { SocialView } from "./SocialView";
 import { OperationalView } from "./OperationalView";
 import { VariableTooltip } from "./VariableTooltip";
 import { LegalTooltip } from "./LegalTooltip";
+import { LegalLexikon } from "./LegalLexikon";
 import { ProfileSwitcher } from "./ProfileSwitcher";
 import { DashboardAssistant } from "./DashboardAssistant";
 import {
@@ -134,6 +135,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState<
     "financial" | "social" | "operational"
   >("financial");
+  const [legalLexikonOpen, setLegalLexikonOpen] = useState(false);
 
   const {
     abfindungsfaktor,
@@ -429,11 +431,18 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Profile Switcher + Top Navigation */}
         <div className="bg-white border-b border-slate-200 px-8 py-4">
-          <div className="mb-4 max-w-md">
+          <div className="mb-4 flex items-center justify-between gap-4">
             <ProfileSwitcher
               activeProfile={activeProfile}
               onSwitch={setActiveProfile}
             />
+            <button
+              onClick={() => setLegalLexikonOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-mono text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <span className="font-serif">§</span>
+              Rechtliche Grundlagen
+            </button>
           </div>
           <div className="flex gap-8">
           <button
@@ -474,6 +483,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
         {/* View Content */}
         <DashboardAssistant />
+        <LegalLexikon isOpen={legalLexikonOpen} onClose={() => setLegalLexikonOpen(false)} />
         <div className="flex-1 overflow-y-auto p-8">
           {activeTab === "financial" && (
             <FinancialView cashflow={data.cashflow} />
