@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDataStore } from '../store/useDataStore';
 import { RotateCcw } from 'lucide-react';
+import { InfoTooltip } from './InfoTooltip';
 
 export const WeightingPanel: React.FC = () => {
   const securityBias = useDataStore((s) => s.securityBias);
@@ -22,17 +23,24 @@ export const WeightingPanel: React.FC = () => {
     value,
     onChange,
     color,
+    tooltipText,
   }: {
     label: string;
     short: string;
     value: number;
     onChange: (v: number) => void;
     color: string;
+    tooltipText?: string;
   }) => (
     <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="text-xs font-medium text-slate-700">{label}</span>
-        <span className="text-xs font-mono text-slate-500 tabular-nums">{value.toFixed(2)}</span>
+      <div className="flex justify-between items-center gap-1 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0 shrink">
+          <span className="text-xs font-medium text-slate-700 truncate">{label}</span>
+          {tooltipText && (
+            <InfoTooltip text={tooltipText} ariaLabel={`Info: ${label}`} />
+          )}
+        </div>
+        <span className="text-xs font-mono text-slate-500 tabular-nums shrink-0">{value.toFixed(2)}</span>
       </div>
       <div className="flex gap-2 items-center">
         <input
@@ -71,6 +79,7 @@ export const WeightingPanel: React.FC = () => {
         value={securityBias}
         onChange={setSecurityBias}
         color="#6366f1"
+        tooltipText="Gibt an, wie stark Agenten (Mitarbeiter) an Sicherheit und dem Status Quo festhalten. Ein hoher Wert verlangsamt den Wechselwillen und simuliert das Verharren im gewohnten Umfeld (Montan-Stahl)."
       />
       <p className="text-[10px] text-slate-500 -mt-2">
         Verweildauer im Status &apos;Suffer&apos;
@@ -82,6 +91,7 @@ export const WeightingPanel: React.FC = () => {
         value={innovationDrive}
         onChange={setInnovationDrive}
         color="#10b981"
+        tooltipText="Misst die Anziehungskraft neuer Chancen. Ein hoher Wert simuliert eine Belegschaft, die proaktiv nach Qualifizierung und neuen Job-Perspektiven (Joy) sucht."
       />
       <p className="text-[10px] text-slate-500 -mt-2">
         Geschwindigkeit Richtung &apos;Joy&apos;
@@ -93,6 +103,7 @@ export const WeightingPanel: React.FC = () => {
         value={socialPeerPressure}
         onChange={setSocialPeerPressure}
         color="#f59e0b"
+        tooltipText="Simuliert den soziologischen Effekt des Mitläuferverhaltens. Ein hoher Wert bedeutet, dass Agenten ihre Entscheidung stark davon abhängig machen, wie viele Kollegen bereits den Transformations-Vertrag unterschrieben haben."
       />
       <p className="text-[10px] text-slate-500 -mt-2">
         Effekt: &apos;Ich unterschreibe erst, wenn Kollegen es tun&apos;
