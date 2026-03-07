@@ -8,6 +8,7 @@ import { OperationalView } from "./OperationalView";
 import { VariableTooltip } from "./VariableTooltip";
 import { LegalTooltip } from "./LegalTooltip";
 import { LegalLexikon } from "./LegalLexikon";
+import { MethodologyModal } from "./MethodologyModal";
 import { WeightingPanel } from "./WeightingPanel";
 import { ProfileSwitcher } from "./ProfileSwitcher";
 import { DashboardAssistant } from "./DashboardAssistant";
@@ -137,6 +138,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     "financial" | "social" | "operational"
   >("financial");
   const [legalLexikonOpen, setLegalLexikonOpen] = useState(false);
+  const [methodologyModalOpen, setMethodologyModalOpen] = useState(false);
 
   const {
     abfindungsfaktor,
@@ -441,13 +443,21 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               activeProfile={activeProfile}
               onSwitch={setActiveProfile}
             />
-            <button
-              onClick={() => setLegalLexikonOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-mono text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
-            >
-              <span className="font-serif">§</span>
-              Rechtliche Grundlagen
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMethodologyModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-mono text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                Methodik & Validität
+              </button>
+              <button
+                onClick={() => setLegalLexikonOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-mono text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <span className="font-serif">§</span>
+                Rechtliche Grundlagen
+              </button>
+            </div>
           </div>
           <div className="flex gap-8">
           <button
@@ -489,6 +499,7 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         {/* View Content */}
         <DashboardAssistant />
         <LegalLexikon isOpen={legalLexikonOpen} onClose={() => setLegalLexikonOpen(false)} />
+        <MethodologyModal isOpen={methodologyModalOpen} onClose={() => setMethodologyModalOpen(false)} />
         <div className="flex-1 overflow-y-auto p-8">
           {activeTab === "financial" && (
             <FinancialView cashflow={data.cashflow} />
