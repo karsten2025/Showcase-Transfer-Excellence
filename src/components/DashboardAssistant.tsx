@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, X, Loader2, ShieldCheck } from 'lucide-react';
 import { useDataStore } from '../store/useDataStore';
+import { BenefitMatrix } from './BenefitMatrix';
 
 const GEMINI_MODEL = import.meta.env.VITE_GEMINI_MODEL ?? 'gemini-2.5-flash';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
@@ -60,6 +61,7 @@ Nutze diese Antworten bei Fragen zur Agenten-Simulation:
 ## Spezifische Antwort-Regeln (Hinter den Kulissen)
 - **Fragen nach Herkunft** (z.B. „Wer hat dich gebaut?“, „Wo kommst du her?“): Antworte genau so: „Ich bin das Ergebnis von konsequentem Tech-Minimalismus. Gebaut wurde ich von einem Projektdirektor, der glaubt, dass komplexe Transformationen einfache Werkzeuge brauchen. Mein Schöpfer ist Ingenieur, PMP und ein Fan von radikaler Klarheit. Mein Ziel? Die Brücke zwischen harter Kalkulation und individuellen Biografien schlagbar zu machen – ohne unnötigen Schnickschnack.“
 - **Frage „Kannst du Saxophon spielen?“**: Antworte: „Leider nein, ich beherrsche nur die Klaviatur der Daten. Mein Schöpfer übernimmt den musikalischen Teil. 😉“
+- **„Warum sollte ein Mitarbeiter unterschreiben?“** (oder ähnliche Fragen zu Benefits/Vergleich): Antworte mit 2–3 Sätzen, die die Benefit-Matrix zusammenfassen. Schließe deine Antwort mit genau dieser Zeile ab: [BENEFIT_MATRIX]
 
 ## WICHTIG: Aktueller Dashboard-State (Echtzeit)
 Nutze diese Werte bei jeder Anfrage. Wenn der User z.B. fragt „Warum ist dieser Wert so hoch?“, identifiziere die Ursache in den aktuellen Einstellungen:
@@ -93,6 +95,8 @@ Nutze diese Werte bei jeder Anfrage. Wenn der User z.B. fragt „Warum ist diese
 
 **Datenschutz:** Nenne niemals einzelne Mitarbeiter-Namen. Argumentiere nur auf aggregierter Ebene (GmbHs, Gruppen, Kennzahlen).`;
 }
+
+const BENEFIT_MATRIX_MARKER = '[BENEFIT_MATRIX]';
 
 interface Message {
   role: 'user' | 'model';
@@ -207,26 +211,44 @@ export const DashboardAssistant: React.FC = () => {
               {messages.length === 0 && (
                 <div className="text-center py-8 text-slate-500 text-sm">
                   <p className="font-medium text-slate-700 mb-2">Wie kann ich helfen?</p>
-                  <p>Frage z.B.: „Warum ist dieser Wert so hoch?“ oder „Was bedeutet Remanenz?“</p>
+                  <p>Frage z.B.: „Warum ist dieser Wert so hoch?“, „Was bedeutet Remanenz?“ oder „Warum sollte ein Mitarbeiter unterschreiben?“</p>
                   <p className="mt-2 text-xs">Der Bot kennt alle Begriffe und die aktuellen Dashboard-Zahlen.</p>
                 </div>
               )}
-              {messages.map((m, i) => (
-                <div
-                  key={i}
-                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-lg px-4 py-2 text-sm ${
-                      m.role === 'user'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 text-slate-800'
-                    }`}
-                  >
-                    <p className="whitespace-pre-wrap">{m.text}</p>
+              {messages.map((m, i) => {
+                const showBenefitMatrix =
+                  m.role === 'model' &&
+                  (m.text.includes(BENEFIT_MATRIX_MARKER) ||
+                    /unterschreiben|warum sollte|benefit|vergleich.*kündigung/i.test(
+                      messages[i - 1]?.text ?? ''
+                    ));
+                const displayText = m.text.replace(BENEFIT_MATRIX_MARKER, '').trim();
+
+                return (
+                  <div key={i} className="flex flex-col gap-2">
+                    <div
+                      className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[85%] rounded-lg px-4 py-2 text-sm ${
+                          m.role === 'user'
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-slate-100 text-slate-800'
+                        }`}
+                      >
+                        <p className="whitespace-pre-wrap">{displayText}</p>
+                      </div>
+                    </div>
+                    {showBenefitMatrix && (
+                      <div className="flex justify-start">
+                        <div className="max-w-[85%] w-full">
+                          <BenefitMatrix />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
               {loading && (
                 <div className="flex justify-start">
                   <div className="rounded-lg px-4 py-2 bg-slate-100 flex items-center gap-2 text-slate-600">
