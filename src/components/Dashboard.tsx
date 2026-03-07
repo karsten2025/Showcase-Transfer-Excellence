@@ -6,6 +6,7 @@ import { FinancialView } from "./FinancialView";
 import { SocialView } from "./SocialView";
 import { OperationalView } from "./OperationalView";
 import { VariableTooltip } from "./VariableTooltip";
+import { LegalTooltip } from "./LegalTooltip";
 import { ProfileSwitcher } from "./ProfileSwitcher";
 import { DashboardAssistant } from "./DashboardAssistant";
 import {
@@ -312,10 +313,13 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <div className="space-y-6">
             <div>
               <label className="flex justify-between items-start text-sm font-medium text-slate-700 mb-2">
-                <VariableTooltip
-                  label="Abfindungsfaktor (Basis)"
-                  content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.abfindungsfaktor : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.abfindungsfaktor}
-                />
+                <span className="flex items-center gap-1.5">
+                  <VariableTooltip
+                    label="Abfindungsfaktor (Basis)"
+                    content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.abfindungsfaktor : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.abfindungsfaktor}
+                  />
+                  <LegalTooltip paramKey="abfindungsfaktor" />
+                </span>
                 <span className="text-indigo-600 shrink-0 ml-2">
                   {abfindungsfaktor.toFixed(1)}
                 </span>
@@ -338,10 +342,13 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
             <div>
               <label className="flex justify-between items-start text-sm font-medium text-slate-700 mb-2">
-                <VariableTooltip
-                  label="Netto-Aufstockung (%)"
-                  content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.nettoAufstockung : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.nettoAufstockung}
-                />
+                <span className="flex items-center gap-1.5">
+                  <VariableTooltip
+                    label="Netto-Aufstockung (%)"
+                    content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.nettoAufstockung : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.nettoAufstockung}
+                  />
+                  <LegalTooltip paramKey="nettoAufstockung" />
+                </span>
                 <span className="text-indigo-600 shrink-0 ml-2">
                   {nettoAufstockung}%
                 </span>
@@ -361,10 +368,13 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
             <div>
               <label className="flex justify-between items-start text-sm font-medium text-slate-700 mb-2">
-                <VariableTooltip
-                  label="Härtefall-Alter"
-                  content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.haertefallAlter : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.haertefallAlter}
-                />
+                <span className="flex items-center gap-1.5">
+                  <VariableTooltip
+                    label="Härtefall-Alter"
+                    content={activeProfile === 'STEEL' ? STAKEHOLDER_HEURISTICS_STEEL.haertefallAlter : STAKEHOLDER_HEURISTICS_AUTOMOTIVE.haertefallAlter}
+                  />
+                  <LegalTooltip paramKey="haertefallAlter" />
+                </span>
                 <span className="text-indigo-600 shrink-0 ml-2">
                   {haertefallAlter} Jahre
                 </span>
@@ -393,8 +403,9 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   />
                   <div className="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                 </div>
-                <span className="text-sm font-medium text-slate-700">
+                <span className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
                   Sprinter-Prämie (20%)
+                  <LegalTooltip paramKey="sprinterPraemie" />
                 </span>
               </label>
               <p className="text-xs text-slate-500 mt-1 ml-13">

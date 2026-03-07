@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, X, Loader2, ShieldCheck } from 'lucide-react';
 import { useDataStore } from '../store/useDataStore';
 import { BenefitMatrix } from './BenefitMatrix';
+import { legalMappings } from '../legalMappings';
 
 const GEMINI_MODEL = import.meta.env.VITE_GEMINI_MODEL ?? 'gemini-2.5-flash';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
@@ -93,7 +94,17 @@ Nutze diese Werte bei jeder Anfrage. Wenn der User z.B. fragt „Warum ist diese
 }
 \`\`\`
 
-**Datenschutz:** Nenne niemals einzelne Mitarbeiter-Namen. Argumentiere nur auf aggregierter Ebene (GmbHs, Gruppen, Kennzahlen).`;
+**Datenschutz:** Nenne niemals einzelne Mitarbeiter-Namen. Argumentiere nur auf aggregierter Ebene (GmbHs, Gruppen, Kennzahlen).
+
+## E. Legal-Link-Provider (Rechts-Navigator)
+**Automatischer Zusatz:** Bei jeder Antwort, die einen der folgenden Parameter betrifft, füge am Ende automatisch den Zusatz hinzu: **[Rechtliche Grundlage: {quelle}]** (mit der passenden quelle aus der Liste).
+
+**Zuordnungen:**
+${Object.entries(legalMappings)
+  .map(([key, m]) => `- **${key}** (${m.label}): [Rechtliche Grundlage: ${m.quelle}] – ${m.beschreibung}`)
+  .join('\n')}
+
+**Rechts-Navigator-Formulierung:** Wenn nach der Zuverlässigkeit/Schätzung gefragt wird, antworte: „Dieser Parameter ist keine Schätzung. Er basiert auf [Rechtliche Grundlage: {quelle}]. Mein Modell rechnet lediglich die daraus resultierenden Bewegungen der Belegschaft in Echtzeit aus.“`;
 }
 
 const BENEFIT_MATRIX_MARKER = '[BENEFIT_MATRIX]';
