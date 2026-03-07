@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { GmbHMatrix } from '../data/parser';
+import { TransformationSim } from './TransformationSim';
 
 interface OperationalViewProps {
   employees: any[];
@@ -46,6 +47,9 @@ export const OperationalView: React.FC<OperationalViewProps> = ({ employees, mat
 
   return (
     <div className="space-y-6">
+      {/* ABM-Light: Mitarbeiter-Navigation */}
+      <TransformationSim />
+
       {/* KPI Cards */}
       <div className="grid grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">

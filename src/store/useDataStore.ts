@@ -56,12 +56,14 @@ interface DataState {
   aufstockungNetto: number;
   haertefallAlter: number;
   sprinterPraemie: number;
+  speedProfiling: number;
 
   setEmployees: (data: Employee[]) => void;
   setActiveProfile: (profile: ActiveProfile) => void;
   setBaseAbfindungsFaktor: (val: number) => void;
   setHaertefallAlter: (val: number) => void;
   setNettoAufstockung: (val: number) => void;
+  setSpeedProfiling: (val: number) => void;
 
   getMetrics: () => {
     tgPotential: number;
@@ -89,12 +91,14 @@ export const useDataStore = create<DataState>((set, get) => ({
   aufstockungNetto: 0.85,
   haertefallAlter: 60,
   sprinterPraemie: 0.20,
+  speedProfiling: 1,
 
   setEmployees: (employees) => set({ employees }),
   setActiveProfile: (activeProfile) => set({ activeProfile }),
   setBaseAbfindungsFaktor: (val) => set({ baseAbfindungsFaktor: val }),
   setHaertefallAlter: (val) => set({ haertefallAlter: val }),
   setNettoAufstockung: (val) => set({ aufstockungNetto: val }),
+  setSpeedProfiling: (val) => set({ speedProfiling: Math.max(0.2, Math.min(2, val)) }),
 
   getMetrics: () => {
     const { employees, baseAbfindungsFaktor, haertefallAlter, activeProfile } = get();
