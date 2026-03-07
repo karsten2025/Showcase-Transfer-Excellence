@@ -41,6 +41,11 @@ export const TransformationSim: React.FC = () => {
   const speedProfiling = useDataStore((s) => s.speedProfiling);
   const setSpeedProfiling = useDataStore((s) => s.setSpeedProfiling);
   const activeProfile = useDataStore((s) => s.activeProfile);
+  const securityBias = useDataStore((s) => s.securityBias);
+  const innovationDrive = useDataStore((s) => s.innovationDrive);
+  const socialPeerPressure = useDataStore((s) => s.socialPeerPressure);
+
+  const staggerDelay = STAGGER_DELAY * (1 + socialPeerPressure);
 
   const agents = useMemo(() => {
     const result: Agent[] = [];
@@ -62,15 +67,19 @@ export const TransformationSim: React.FC = () => {
         id: i,
         lane: i % LANE_COUNT,
         startAge,
-        delay: i * STAGGER_DELAY,
+        delay: i * staggerDelay,
         type,
         progressThreshold: clampedThreshold,
       });
     }
     return result;
-  }, [haertefallAlter]);
+  }, [haertefallAlter, staggerDelay]);
 
-  const duration = 8 / (speedProfiling + 0.2);
+  const baseDuration = 8 / (speedProfiling + 0.2);
+  const duration =
+    baseDuration *
+    (1 + securityBias * 0.5) *
+    (1 - innovationDrive * 0.4);
 
   const activeCount = agents.filter((a) => a.type !== 'haertefall_from_start').length;
 

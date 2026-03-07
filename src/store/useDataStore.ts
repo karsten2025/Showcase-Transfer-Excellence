@@ -57,6 +57,9 @@ interface DataState {
   haertefallAlter: number;
   sprinterPraemie: number;
   speedProfiling: number;
+  securityBias: number;
+  innovationDrive: number;
+  socialPeerPressure: number;
 
   setEmployees: (data: Employee[]) => void;
   setActiveProfile: (profile: ActiveProfile) => void;
@@ -64,6 +67,10 @@ interface DataState {
   setHaertefallAlter: (val: number) => void;
   setNettoAufstockung: (val: number) => void;
   setSpeedProfiling: (val: number) => void;
+  setSecurityBias: (val: number) => void;
+  setInnovationDrive: (val: number) => void;
+  setSocialPeerPressure: (val: number) => void;
+  resetWeightingsToDefaults: () => void;
 
   getMetrics: () => {
     tgPotential: number;
@@ -92,6 +99,9 @@ export const useDataStore = create<DataState>((set, get) => ({
   haertefallAlter: 60,
   sprinterPraemie: 0.20,
   speedProfiling: 1,
+  securityBias: 0.5,
+  innovationDrive: 0.5,
+  socialPeerPressure: 0.3,
 
   setEmployees: (employees) => set({ employees }),
   setActiveProfile: (activeProfile) => set({ activeProfile }),
@@ -99,6 +109,15 @@ export const useDataStore = create<DataState>((set, get) => ({
   setHaertefallAlter: (val) => set({ haertefallAlter: val }),
   setNettoAufstockung: (val) => set({ aufstockungNetto: val }),
   setSpeedProfiling: (val) => set({ speedProfiling: Math.max(0.2, Math.min(2, val)) }),
+  setSecurityBias: (val) => set({ securityBias: Math.max(0, Math.min(1, val)) }),
+  setInnovationDrive: (val) => set({ innovationDrive: Math.max(0, Math.min(1, val)) }),
+  setSocialPeerPressure: (val) => set({ socialPeerPressure: Math.max(0, Math.min(1, val)) }),
+  resetWeightingsToDefaults: () =>
+    set({
+      securityBias: 0.5,
+      innovationDrive: 0.5,
+      socialPeerPressure: 0.3,
+    }),
 
   getMetrics: () => {
     const { employees, baseAbfindungsFaktor, haertefallAlter, activeProfile } = get();

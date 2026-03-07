@@ -8,6 +8,7 @@ import { OperationalView } from "./OperationalView";
 import { VariableTooltip } from "./VariableTooltip";
 import { LegalTooltip } from "./LegalTooltip";
 import { LegalLexikon } from "./LegalLexikon";
+import { WeightingPanel } from "./WeightingPanel";
 import { ProfileSwitcher } from "./ProfileSwitcher";
 import { DashboardAssistant } from "./DashboardAssistant";
 import {
@@ -413,6 +414,10 @@ export const Dashboard: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <p className="text-xs text-slate-500 mt-1 ml-13">
                 Beteiligung bei vorzeitigem Austritt
               </p>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100">
+              <WeightingPanel />
             </div>
 
             {/* Dynamische Kurzzusammenfassung (Live-Feedback) */}
